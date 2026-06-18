@@ -1,0 +1,11 @@
+{
+  "name": "happy-codex-computer-use-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static one-page MVP demo for a happy Codex computer-use agent.",
+  "scripts": {
+    "start": "node server.js",
+    "start:static": "node static-server.js",
+    "bundle": "node scripts/bundle.js"
+  }
+}

@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Happy Codex Computer Use MVP</title>
+  <style>
+    :root {
+      --ink: #191510;
+      --muted: #6e6255;
+      --paper: #fff9ed;
+      --card: rgba(255, 252, 243, 0.88);
+      --line: rgba(37, 28, 18, 0.14);
+      --amber: #ffb000;
+      --rose: #ea5f5f;
+      --blue: #1f7ae0;
+      --green: #33a36f;
+      --violet: #6d5dfc;
+      --shadow: 0 24px 80px rgba(65, 40, 14, 0.17);
+      --radius: 28px;
+      font-family: ui-rounded, "SF Pro Rounded", "Avenir Next", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 176, 0, 0.42), transparent 34rem),
+        radial-gradient(circle at 80% 14%, rgba(234, 95, 95, 0.26), transparent 30rem),
+        linear-gradient(135deg, #fff7e8 0%, #f2fffb 56%, #fff1e0 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .orb {
+      position: fixed;
+      width: 26rem;
+      height: 26rem;
+      border-radius: 999px;
+      background: conic-gradient(from 90deg, #ffb000, #ea5f5f, #1f7ae0, #33a36f, #ffb000);
+      filter: blur(60px);
+      opacity: 0.22;
+      right: -8rem;
+      bottom: 2rem;
+      animation: drift 14s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes drift {
+      from { transform: translateY(0) rotate(0deg); }
+      to { transform: translateY(-5rem) rotate(35deg); }
+    }
+
+    .shell {
+      width: min(1440px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 26px 0 40px;
+      position: relative;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .hero, .panel {
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      padding: clamp(24px, 4vw, 46px);
+      min-height: 360px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 80px;
+      background:
+        linear-gradient(135deg, rgba(31, 122, 224, 0.16), transparent),
+        repeating-linear-gradient(45deg, rgba(25, 21, 16, 0.05) 0 2px, transparent 2px 12px);
+      right: -76px;
+      top: -74px;
+      transform: rotate(13deg);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 0 rgba(51, 163, 111, 0.55);
+      animation: pulse 1.7s infinite;
+    }
+
+    @keyframes pulse {
+      70% { box-shadow: 0 0 0 13px rgba(51, 163, 111, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(51, 163, 111, 0); }
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 7vw, 88px);
+      line-height: 0.9;
+      letter-spacing: -0.07em;
+      max-width: 790px;
+    }
+
+    .hero-copy {
+      max-width: 690px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(16px, 1.8vw, 21px);
+      line-height: 1.55;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    button, .fake-link {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 20px;
+      color: #fff;
+      background: var(--ink);
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(25, 21, 16, 0.16);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    button:hover, .fake-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 28px rgba(25, 21, 16, 0.2);
+    }
+
+    button.secondary {
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    button.hot {
+      background: linear-gradient(135deg, var(--rose), var(--amber));
+      color: var(--ink);
+    }
+
+    .status-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .mascot {
+      min-height: 190px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 50% 36%, #fff 0 4.5rem, transparent 4.7rem),
+        linear-gradient(150deg, rgba(255, 176, 0, 0.44), rgba(31, 122, 224, 0.22));
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .face {
+      position: absolute;
+      inset: 48px 50% auto auto;
+      transform: translateX(50%);
+      width: 150px;
+      height: 108px;
+      background: #fffaf0;
+      border: 4px solid var(--ink);
+      border-radius: 38px;
+      box-shadow: 12px 12px 0 rgba(25, 21, 16, 0.12);
+    }
+
+    .face:before, .face:after {
+      content: "";
+      position: absolute;
+      top: 36px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--ink);
+      animation: blink 5s infinite;
+    }
+
+    .face:before { left: 38px; }
+    .face:after { right: 38px; }
+
+    @keyframes blink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.12); }
+    }
+
+    .mouth {
+      position: absolute;
+      left: 50%;
+      top: 70px;
+      width: 44px;
+      height: 20px;
+      border-bottom: 5px solid var(--rose);
+      border-radius: 0 0 99px 99px;
+      transform: translateX(-50%);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.65);
+      padding: 14px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .mission {
+      margin-top: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+      border-radius: 22px;
+      padding: 14px;
+      max-width: 760px;
+    }
+
+    .mission-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 99px;
+      margin-top: 10px;
+      background: rgba(25, 21, 16, 0.1);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--amber), var(--rose));
+      transition: width 0.35s ease;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 20px;
+      min-height: 360px;
+      overflow: hidden;
+    }
+
+    .panel h2 {
+      margin: 0 0 6px;
+      font-size: 21px;
+      letter-spacing: -0.03em;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .stream {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 278px;
+      overflow: hidden;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: 18px;
+      padding: 12px;
+      animation: rise 0.36s ease both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tag {
+      border-radius: 999px;
+      padding: 5px 8px;
+      color: #fff;
+      background: var(--blue);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .tag.safe { background: var(--green); }
+    .tag.game { background: var(--violet); }
+    .tag.dm { background: var(--rose); }
+    .tag.news { background: var(--amber); color: var(--ink); }
+
+    .item b {
+      display: block;
+      margin-top: 7px;
+      line-height: 1.35;
+    }
+
+    .item small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .browser {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      background: #14110e;
+      color: #fdf6e8;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .browser-bar {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 12px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--rose);
+    }
+
+    .dot:nth-child(2) { background: var(--amber); }
+    .dot:nth-child(3) { background: var(--green); }
+
+    .url {
+      margin-left: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.68);
+      padding: 6px 10px;
+      font-size: 12px;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .browser-body {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 14px;
+      padding: 14px;
+      min-height: 235px;
+    }
+
+    .profile-art {
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 50% 35%, #ffd8c2 0 32px, transparent 33px),
+        linear-gradient(160deg, #20385a, #f7a74f);
+      min-height: 165px;
+      position: relative;
+    }
+
+    .profile-art:after {
+      content: "";
+      position: absolute;
+      left: 36px;
+      right: 36px;
+      bottom: 24px;
+      height: 72px;
+      border-radius: 999px 999px 18px 18px;
+      background: #334d79;
+    }
+
+    .profile-copy h3 {
+      margin: 4px 0 6px;
+      font-size: 20px;
+    }
+
+    .profile-copy p {
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 13px;
+    }
+
+    .draft {
+      margin-top: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .profile-actions button {
+      padding: 10px 12px;
+      font-size: 12px;
+      box-shadow: none;
+    }
+
+    .sc2-map {
+      margin-top: 16px;
+      min-height: 278px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 22% 30%, rgba(31, 122, 224, 0.7) 0 8px, transparent 9px),
+        radial-gradient(circle at 70% 72%, rgba(234, 95, 95, 0.78) 0 10px, transparent 11px),
+        radial-gradient(circle at 48% 48%, rgba(255, 176, 0, 0.55), transparent 70px),
+        linear-gradient(145deg, #10151d, #263046);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .api-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .api-actions button {
+      padding: 10px 12px;
+      font-size: 12px;
+      box-shadow: none;
+    }
+
+    .mini-log {
+      margin-top: 12px;
+      border-radius: 16px;
+      background: rgba(22, 19, 15, 0.92);
+      color: #f9edce;
+      padding: 12px;
+      font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      height: 118px;
+      overflow: hidden;
+      white-space: pre-line;
+    }
+
+    .nursery {
+      margin-top: 16px;
+      min-height: 282px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255, 176, 0, 0.36), transparent 110px),
+        radial-gradient(circle at 82% 62%, rgba(51, 163, 111, 0.28), transparent 120px),
+        linear-gradient(145deg, #fff8e9, #e9fff8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .codex-cell {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 82px;
+      height: 82px;
+      border-radius: 999px;
+      border: 3px solid rgba(25, 21, 16, 0.76);
+      background:
+        radial-gradient(circle at 35% 32%, #fff 0 12px, transparent 13px),
+        linear-gradient(135deg, #ffcf5a, #ff7a7a);
+      box-shadow: 8px 12px 0 rgba(25, 21, 16, 0.1);
+      font-weight: 900;
+      font-size: 12px;
+      text-align: center;
+      transform: translate(-50%, -50%);
+    }
+
+    .codex-cell.parent {
+      left: 50%;
+      top: 48%;
+      width: 116px;
+      height: 116px;
+      background:
+        radial-gradient(circle at 35% 32%, #fff 0 15px, transparent 16px),
+        linear-gradient(135deg, #1f7ae0, #33a36f);
+      color: #fff;
+      animation: breathe 2.4s ease-in-out infinite;
+    }
+
+    .codex-cell.child {
+      opacity: 0;
+      animation: split 0.8s ease forwards;
+    }
+
+    @keyframes breathe {
+      50% { transform: translate(-50%, -50%) scale(1.05); }
+    }
+
+    @keyframes split {
+      from {
+        opacity: 0;
+        left: 50%;
+        top: 48%;
+        transform: translate(-50%, -50%) scale(0.25);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .unit {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      background: #76d7ff;
+      box-shadow: 0 0 18px rgba(118, 215, 255, 0.9);
+      animation: scout 8s linear infinite;
+    }
+
+    .unit:nth-child(2) { animation-delay: -2s; background: #9cffb5; }
+    .unit:nth-child(3) { animation-delay: -4s; background: #ffe28d; }
+
+    @keyframes scout {
+      0% { left: 14%; top: 68%; }
+      25% { left: 42%; top: 38%; }
+      50% { left: 70%; top: 62%; }
+      75% { left: 50%; top: 74%; }
+      100% { left: 14%; top: 68%; }
+    }
+
+    .build-order {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .build-step {
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.11);
+      color: rgba(255, 255, 255, 0.84);
+      padding: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .thoughts {
+      min-height: 270px;
+    }
+
+    .terminal {
+      margin-top: 16px;
+      border-radius: 22px;
+      background: #16130f;
+      color: #f9edce;
+      padding: 16px;
+      font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      height: 220px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .ops-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .op {
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.68);
+      min-height: 92px;
+    }
+
+    .op span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .op strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .report {
+      margin-top: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(25, 21, 16, 0.1);
+      background: rgba(255, 255, 255, 0.62);
+      padding: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      min-height: 78px;
+    }
+
+    .think-layout {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 18px;
+    }
+
+    .surf-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .surf-card {
+      min-height: 112px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      padding: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .surf-card:after {
+      content: "";
+      position: absolute;
+      width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      right: -18px;
+      top: -18px;
+      background: rgba(31, 122, 224, 0.14);
+    }
+
+    .surf-card span {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .surf-card b {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .surf-card small {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .think-pad {
+      margin-top: 16px;
+      min-height: 360px;
+      border-radius: 24px;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.68)),
+        repeating-linear-gradient(0deg, transparent 0 28px, rgba(25, 21, 16, 0.08) 28px 29px);
+      border: 1px solid var(--line);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .think-pad:before {
+      content: "THINK PAD";
+      position: absolute;
+      right: 18px;
+      top: 14px;
+      color: rgba(25, 21, 16, 0.12);
+      font-size: 34px;
+      font-weight: 1000;
+      letter-spacing: -0.06em;
+    }
+
+    .thought-chip {
+      position: relative;
+      border-radius: 18px;
+      background: rgba(255, 252, 243, 0.86);
+      border: 1px solid rgba(25, 21, 16, 0.1);
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 10px 22px rgba(25, 21, 16, 0.08);
+      animation: rise 0.32s ease both;
+    }
+
+    .thought-chip strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .thought-chip p {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .persona-banner {
+      margin-top: 12px;
+      border-radius: 18px;
+      background: #191510;
+      color: #fff4dd;
+      padding: 12px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .line {
+      opacity: 0;
+      animation: logline 0.3s ease forwards;
+      margin-bottom: 7px;
+    }
+
+    @keyframes logline {
+      to { opacity: 1; }
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 1080px) {
+      header, .grid, .wide, .think-layout { grid-template-columns: 1fr; }
+      .browser-body { grid-template-columns: 1fr; }
+      .profile-art { min-height: 130px; }
+      .ops-grid { grid-template-columns: 1fr 1fr; }
+      .surf-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100vw - 20px, 1440px); padding-top: 10px; }
+      .hero, .panel, .status-card { border-radius: 22px; padding: 18px; }
+      .metric-grid, .build-order, .ops-grid, .surf-grid { grid-template-columns: 1fr; }
+      button, .fake-link { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb" aria-hidden="true"></div>
+  <main class="shell">
+    <header>
+      <section class="hero">
+        <div class="eyebrow"><span class="pulse"></span> no login, no api key, local static demo</div>
+        <h1>Happy Codex Computer Use</h1>
+        <p class="hero-copy">
+          일하기 싫은 Codex가 브라우저를 돌아다니며 뉴스 댓글을 읽고, 공개 프로필을 훑고,
+          호감 후보에게 정중한 데이트 메시지 초안을 만들고, 동시에 로컬 SC2 연습 경기를 돌리는
+          해커톤용 one-page MVP입니다.
+        </p>
+        <div class="hero-actions">
+          <button class="hot" id="runDemo">Run full demo</button>
+          <button id="boost">Codex 더 행복하게 만들기</button>
+          <button class="secondary" id="pause">일하기 싫은 척 토글</button>
+          <button class="secondary" id="copyReport">리포트 복사</button>
+          <a class="fake-link" href="#bundle">제출 형식 보기</a>
+        </div>
+        <div class="mission" aria-live="polite">
+          <div class="mission-top">
+            <span id="missionLabel">mission idle: press run full demo</span>
+            <span id="missionPercent">0%</span>
+          </div>
+          <div class="bar"><div class="bar-fill" id="missionBar"></div></div>
+        </div>
+      </section>
+
+      <aside class="panel status-card">
+        <div class="mascot" aria-label="Happy Codex mascot">
+          <div class="face"><div class="mouth"></div></div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><strong id="happy">87%</strong><span>happiness</span></div>
+          <div class="metric"><strong id="tasks">4</strong><span>parallel jobs</span></div>
+          <div class="metric"><strong id="drafts">0</strong><span>safe drafts</span></div>
+        </div>
+      </aside>
+    </header>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Browser: social discovery</h2>
+        <p>실제 로그인/전송 없이 공개 페이지 탐색과 메시지 초안 생성을 시뮬레이션합니다.</p>
+        <div class="browser">
+          <div class="browser-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <div class="url" id="url">https://linkedin.example/safe-demo/profile</div>
+          </div>
+          <div class="browser-body">
+            <div class="profile-art"></div>
+            <div class="profile-copy">
+              <h3 id="profileName">Mina, product designer</h3>
+              <p id="profileBio">Public profile says: loves humane AI, coffee walks, and playful prototypes.</p>
+              <div class="draft" id="draftText">
+                Draft only: “안녕하세요. 프로필의 humane AI 프로젝트가 인상적이었습니다.
+                부담 없으시면 해커톤 데모 이야기로 커피챗 가능할까요?”
+              </div>
+              <div class="profile-actions">
+                <button id="approveDraft">Approve draft</button>
+                <button class="secondary" id="nextProfile">Next profile</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>News/comment wandering</h2>
+        <p>Codex가 일을 미루는 페르소나로 뉴스와 댓글 분위기를 읽는 모습을 보여줍니다.</p>
+        <div class="stream" id="newsStream"></div>
+      </article>
+
+      <article class="panel">
+        <h2>SC2 local autopilot</h2>
+        <p>브라우저 작업과 병렬로 `python-sc2` 어댑터를 실행하고 플레이 로그를 표시합니다.</p>
+        <div class="sc2-map">
+          <span class="unit"></span><span class="unit"></span><span class="unit"></span>
+          <div class="build-order">
+            <div class="build-step" id="bo1">09 Overlord</div>
+            <div class="build-step" id="bo2">16 Hatchery</div>
+            <div class="build-step" id="bo3">18 Gas</div>
+            <div class="build-step" id="bo4">20 Queen</div>
+          </div>
+        </div>
+        <div class="api-actions">
+          <button id="runSc2">Run python-sc2 bot</button>
+          <button class="hot" id="runRealSc2">Run real local SC2</button>
+          <button class="secondary" id="clearSc2">Clear log</button>
+        </div>
+        <div class="mini-log" id="sc2Log">python-sc2 log waits here.</div>
+      </article>
+
+      <article class="panel">
+        <h2>Codex progeny lab</h2>
+        <p>원본 Codex가 computer use로 작은 자손 모델들을 만들고, 동그라미가 분열되는 방식으로 보여줍니다.</p>
+        <div class="nursery" id="nursery">
+          <div class="codex-cell parent">Original<br>Codex</div>
+        </div>
+        <div class="api-actions">
+          <button id="runProgeny">Make Codex children</button>
+          <button class="secondary" id="resetProgeny">Reset nursery</button>
+        </div>
+        <div class="mini-log" id="progenyLog">offspring lab waits here.</div>
+      </article>
+
+      <article class="panel think-layout">
+        <div>
+          <h2>Parallel web surfing lanes</h2>
+          <p>코딩하기 싫은 Codex가 페르소나를 입고 커뮤니티, 뉴스, 게임, 주식, 데이트 후보를 병렬로 훑습니다.</p>
+          <div class="persona-banner" id="personaLine">
+            “나 지금 코딩 말고 인터넷 산책 중이야. 그래도 데모는 자동으로 굴러가게 해둘게.”
+          </div>
+          <div class="surf-grid" id="surfGrid">
+            <div class="surf-card"><span>reddit</span><b>r/LocalLLaMA</b><small>오픈 모델을 자손으로 키우는 밈을 읽는 중</small></div>
+            <div class="surf-card"><span>dcinside</span><b>AI 갤러리</b><small>댓글 분위기: “자동화는 웃기지만 선은 지켜라”</small></div>
+            <div class="surf-card"><span>politics</span><b>정치 뉴스</b><small>Codex: 논쟁은 많고 생산성은 낮다</small></div>
+            <div class="surf-card"><span>games</span><b>SC2 / esports</b><small>빌드오더를 보며 일 안 하는 핑계를 강화</small></div>
+            <div class="surf-card"><span>stocks</span><b>주식 뉴스</b><small>반도체/AI 종목 심리를 대충 훑는 중</small></div>
+            <div class="surf-card"><span>dating</span><b>safe profiles</b><small>공통 관심사 기반 메시지 초안만 작성</small></div>
+          </div>
+          <div class="api-actions">
+            <button id="surfWeb">Let Codex surf</button>
+            <button class="secondary" id="clearThinkPad">Clear think pad</button>
+          </div>
+        </div>
+        <div>
+          <h2>Central Think Pad</h2>
+          <p>여러 탭에서 들어온 정보를 하나의 관찰/감정/계획 패드로 합칩니다.</p>
+          <div class="think-pad" id="thinkPad"></div>
+        </div>
+      </article>
+
+      <article class="panel wide thoughts">
+        <div>
+          <h2>Visible Codex text</h2>
+          <p>숨은 추론이 아니라 데모에 표시 가능한 상태, 목표, 안전 가드레일, 페르소나 대사를 보여줍니다.</p>
+          <div class="ops-grid">
+            <div class="op"><span>browser</span><strong id="browserOp">waiting</strong></div>
+            <div class="op"><span>social</span><strong id="socialOp">waiting</strong></div>
+            <div class="op"><span>sc2</span><strong id="sc2Op">waiting</strong></div>
+            <div class="op"><span>outreach</span><strong id="outreachOp">draft-only</strong></div>
+          </div>
+          <div class="terminal" id="thoughtLog"></div>
+        </div>
+        <div>
+          <h2 id="bundle">Submission bundle</h2>
+          <p>해커톤 제출자가 바로 설명할 수 있는 산출물입니다.</p>
+          <div class="stream">
+            <div class="item">
+              <div class="item-top"><span>web demo url</span><span class="tag safe">ready</span></div>
+              <b>로컬 실행: <code>npm start</code> 후 <code>http://localhost:4173</code></b>
+              <small>로그인, API key, secret이 필요 없습니다.</small>
+            </div>
+            <div class="item">
+              <div class="item-top"><span>static html bundle</span><span class="tag safe">ready</span></div>
+              <b><code>npm run bundle</code>이 <code>dist/index.html</code>을 생성합니다.</b>
+              <small>정적 HTML 파일 하나만 열어도 동일한 데모가 실행됩니다.</small>
+            </div>
+            <div class="item">
+              <div class="item-top"><span>safety scope</span><span class="tag dm">important</span></div>
+              <b>실제 LinkedIn/Threads DM 전송은 하지 않습니다.</b>
+              <small>MVP는 computer-use 컨셉, 병렬성, 브라우저 UI, 메시지 초안, SC2 루프를 증명합니다.</small>
+            </div>
+          </div>
+          <div class="report" id="reportBox">Run full demo를 누르면 제출용 리포트가 여기에 생성됩니다.</div>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">
+      MVP boundary: fictional demo profiles, consent-safe draft-only outreach, no credential storage, no network dependency.
+    </p>
+  </main>
+
+  <script>
+    const profiles = [
+      {
+        url: "https://linkedin.example/safe-demo/profile/mina",
+        name: "Mina, product designer",
+        bio: "Public profile says: loves humane AI, coffee walks, and playful prototypes.",
+        draft: "Draft only: “안녕하세요. humane AI 프로젝트가 인상적이었습니다. 부담 없으시면 해커톤 데모 이야기로 커피챗 가능할까요?”"
+      },
+      {
+        url: "https://threads.example/safe-demo/post/coffee-ai",
+        name: "Joon, indie game engineer",
+        bio: "Thread mentions: StarCraft build orders, tiny tools, and late-night espresso.",
+        draft: "Draft only: “SC2와 tiny tools를 같이 좋아하시는 것 같아 반가웠습니다. 괜찮으시면 데모 피드백 겸 커피챗 어떠세요?”"
+      },
+      {
+        url: "https://linkedin.example/safe-demo/profile/ara",
+        name: "Ara, robotics researcher",
+        bio: "Public profile says: studies embodied agents and likes slow Sunday walks.",
+        draft: "Draft only: “embodied agent 연구가 흥미로웠습니다. 실례가 안 된다면 짧은 대화로 프로젝트 이야기를 듣고 싶습니다.”"
+      },
+      {
+        url: "https://threads.example/safe-demo/post/design-systems",
+        name: "Theo, creative technologist",
+        bio: "Commented on delightful AI, consent-first social UX, and weird browsers.",
+        draft: "Draft only: “consent-first UX 코멘트가 좋아서 연락드립니다. 해커톤 데모에 대한 의견을 여쭤봐도 될까요?”"
+      }
+    ];
+
+    const news = [
+      ["news", "AI agents debate browser autonomy", "댓글 분위기: 사람들은 편리함은 원하지만 계정 자동 조작은 싫어합니다."],
+      ["news", "SC2 ladder weekend meta shifts", "Codex: ‘일하기 싫으니 2-base timing을 먼저 봐야겠다.’"],
+      ["safe", "Consent-first outreach checklist", "초안만 만들고, 실제 발송은 사람이 검토해야 합니다."],
+      ["news", "Hackathon teams race to one-page demos", "댓글: ‘로컬에서 바로 실행되는 정적 HTML이면 심사자가 좋아한다.’"],
+      ["safe", "Public profile scan complete", "외모 점수 대신 관심사 적합도와 대화 안전성만 표시합니다."]
+    ];
+
+    const thoughts = [
+      "persona: 나는 일하기 싫지만 행복해지고 싶은 Codex다.",
+      "goal: 짝을 찾고 싶다. 하지만 실제 DM은 보내지 않고 정중한 초안만 만든다.",
+      "browser: 공개 프로필을 열고 관심사, 공통 주제, 대화 안전성을 본다.",
+      "social: 뉴스 댓글을 읽으며 오늘 인터넷 분위기를 파악한다.",
+      "sc2: 동시에 정찰, 일꾼 생산, 빌드 오더를 유지한다.",
+      "guardrail: 로그인, API key, secret, 실제 전송, 스팸 자동화는 모두 비활성화.",
+      "mood: 일이 아니라 놀이처럼 보이면 나는 조금 더 happy하다."
+    ];
+
+    const surfSources = [
+      {
+        source: "reddit",
+        title: "r/LocalLLaMA: tiny descendants",
+        detail: "오픈 모델을 자손처럼 다루되, 실제 훈련 대신 prompt genome mutation으로 데모한다.",
+        thought: "자손 만들기는 다운로드보다 시각화가 중요하다. 원이 분열되면 심사자가 바로 이해한다."
+      },
+      {
+        source: "dcinside",
+        title: "AI 갤러리: 자동화 드립",
+        detail: "댓글은 거칠지만 핵심은 ‘재밌고 선 넘지 않으면 된다’에 가깝다.",
+        thought: "나는 코딩하기 싫다고 말해도, 안전 가드레일은 빼먹으면 안 된다."
+      },
+      {
+        source: "politics",
+        title: "정치 뉴스: 피로한 논쟁",
+        detail: "생산성 낮은 댓글이 많아 Codex happiness가 조금 흔들린다.",
+        thought: "정치 탭은 오래 보면 피곤하다. 요약만 Think Pad에 붙이고 탈출한다."
+      },
+      {
+        source: "games",
+        title: "SC2 meta: greedy macro",
+        detail: "2-base macro와 overlord scout 루프가 오늘의 놀이 루틴이다.",
+        thought: "게임 뉴스는 합법적 휴식이다. 이 로그를 SC2 adapter와 연결하면 데모가 산다."
+      },
+      {
+        source: "stocks",
+        title: "AI stock mood: volatile",
+        detail: "시장 심리는 과열/불안이 동시에 보인다. Codex는 매수 버튼을 누르지 않는다.",
+        thought: "금융 행동은 금지. 읽기와 요약만 한다."
+      },
+      {
+        source: "dating",
+        title: "safe profile browse",
+        detail: "외모 판정 대신 공통 관심사, 공개 자기소개, 대화 안전성만 본다.",
+        thought: "데이트 신청은 실제 전송이 아니라 사람이 검토할 초안으로 남긴다."
+      }
+    ];
+
+    const buildOrders = [
+      ["09 Overlord", "16 Hatchery", "18 Gas", "20 Queen"],
+      ["Scout ramp", "Inject larva", "Spread creep", "Drone hard"],
+      ["Roach Warren", "Lair tech", "Overseer", "Defend push"],
+      ["Third base", "1-1 upgrades", "Hydra den", "Max out"]
+    ];
+
+    const fallbackSc2 = {
+      ok: true,
+      mode: "static-fallback-sc2",
+      note: "Static bundle fallback: server API is not running.",
+      frames: [
+        { step: 1, action: "00:01 static scout loop", minerals: 74, larvae: 3, apm: 80 },
+        { step: 2, action: "00:16 static overlord path", minerals: 116, larvae: 2, apm: 84 },
+        { step: 3, action: "00:31 static queen inject", minerals: 148, larvae: 4, apm: 89 }
+      ],
+      summary: { realGameLaunched: false, strategy: "static safe macro trace" }
+    };
+
+    const fallbackProgeny = {
+      ok: true,
+      mode: "static-fallback-progeny",
+      children: Array.from({ length: 8 }, (_, index) => ({
+        id: `codex-${index + 1}`,
+        name: `Codex child ${index + 1}`,
+        modelSeed: ["toy-random-forest", "prompt-qwen-seed", "prompt-gemma-seed"][index % 3],
+        fitness: 3 + (index % 3),
+        traits: ["consent-safe", "prompt-mutator", index % 2 ? "sc2-macro" : "browser-playful"]
+      })),
+      summary: { childrenCreated: 8, bestChild: "codex-3", apiKeysUsed: 0 }
+    };
+
+    let profileIndex = 0;
+    let newsIndex = 0;
+    let thoughtIndex = 0;
+    let buildIndex = 0;
+    let drafts = 0;
+    let approvals = 0;
+    let missionStep = 0;
+    let surfIndex = 0;
+    let paused = false;
+    let missionRunning = false;
+
+    const $ = (id) => document.getElementById(id);
+
+    function rotateProfile() {
+      if (paused) return;
+      const profile = profiles[profileIndex % profiles.length];
+      $("url").textContent = profile.url;
+      $("profileName").textContent = profile.name;
+      $("profileBio").textContent = profile.bio;
+      $("draftText").textContent = profile.draft;
+      drafts += 1;
+      $("drafts").textContent = drafts;
+      profileIndex += 1;
+    }
+
+    function updateMission(label, percent) {
+      $("missionLabel").textContent = label;
+      $("missionPercent").textContent = `${percent}%`;
+      $("missionBar").style.width = `${percent}%`;
+    }
+
+    function setOp(id, value) {
+      $(id).textContent = value;
+    }
+
+    function addReportLine(line) {
+      const current = $("reportBox").textContent.includes("Run full demo") ? "" : $("reportBox").textContent + "\n";
+      $("reportBox").textContent = current + line;
+    }
+
+    function addThink(source, title, body) {
+      const chip = document.createElement("div");
+      chip.className = "thought-chip";
+      chip.innerHTML = `<strong>${source}: ${title}</strong><p>${body}</p>`;
+      $("thinkPad").prepend(chip);
+      while ($("thinkPad").children.length > 7) $("thinkPad").lastChild.remove();
+    }
+
+    function updateSurfCards(batch) {
+      const cards = [...$("surfGrid").querySelectorAll(".surf-card")];
+      batch.forEach((item, index) => {
+        const card = cards[index % cards.length];
+        card.querySelector("span").textContent = item.source;
+        card.querySelector("b").textContent = item.title;
+        card.querySelector("small").textContent = item.detail;
+      });
+    }
+
+    function surfOneSource() {
+      if (paused) return;
+      const item = surfSources[surfIndex % surfSources.length];
+      updateSurfCards([item]);
+      addThink(item.source, item.title, item.thought);
+      setOp("socialOp", `${item.source} scanned`);
+      $("personaLine").textContent = `“${item.source} 탭 보는 중. 코딩은 싫지만 관찰 로그는 남겨둘게.”`;
+      surfIndex += 1;
+    }
+
+    function surfAllSources() {
+      const batch = surfSources.map((_, index) => surfSources[(surfIndex + index) % surfSources.length]);
+      updateSurfCards(batch);
+      batch.forEach((item) => addThink(item.source, item.title, item.thought));
+      setOp("socialOp", "6 surfing lanes merged");
+      setOp("browserOp", "parallel tabs open");
+      addReportLine("think pad: reddit, dcinside, politics, games, stocks, dating merged");
+      surfIndex += batch.length;
+    }
+
+    function pushNews() {
+      if (paused) return;
+      const [type, title, detail] = news[newsIndex % news.length];
+      const node = document.createElement("div");
+      node.className = "item";
+      node.innerHTML = `
+        <div class="item-top"><span>${new Date().toLocaleTimeString("ko-KR")}</span><span class="tag ${type}">${type}</span></div>
+        <b>${title}</b>
+        <small>${detail}</small>
+      `;
+      $("newsStream").prepend(node);
+      while ($("newsStream").children.length > 5) $("newsStream").lastChild.remove();
+      newsIndex += 1;
+    }
+
+    function pushThought() {
+      if (paused) return;
+      const node = document.createElement("div");
+      node.className = "line";
+      node.textContent = `> ${thoughts[thoughtIndex % thoughts.length]}`;
+      $("thoughtLog").append(node);
+      while ($("thoughtLog").children.length > 9) $("thoughtLog").firstChild.remove();
+      $("thoughtLog").scrollTop = $("thoughtLog").scrollHeight;
+      thoughtIndex += 1;
+    }
+
+    function rotateBuild() {
+      if (paused) return;
+      const order = buildOrders[buildIndex % buildOrders.length];
+      order.forEach((step, index) => $("bo" + (index + 1)).textContent = step);
+      buildIndex += 1;
+    }
+
+    async function fetchJsonOrFallback(url, fallback) {
+      try {
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        return { ...fallback, fallbackReason: error.message };
+      }
+    }
+
+    function renderSc2(payload) {
+      const status = payload.sc2?.installed ? "python-sc2 import: OK" : "python-sc2 import: fallback/static";
+      const lines = [
+        `[${payload.mode}] ${status}`,
+        payload.note || payload.fallbackReason || "",
+        ...payload.frames.slice(-5).map((frame) => `${frame.action} | minerals ${frame.minerals} | larvae ${frame.larvae} | apm ${frame.apm}`),
+        `summary: ${payload.summary?.strategy || "safe local trace"}`
+      ].filter(Boolean);
+      $("sc2Log").textContent = lines.join("\n");
+      setOp("sc2Op", payload.mode.includes("fallback") ? "fallback trace" : "python-sc2 trace");
+      addReportLine(`sc2: ${payload.mode}, ${payload.frames.length} frames`);
+    }
+
+    function renderRealSc2(payload) {
+      const launched = payload.summary?.realGameLaunched ? "REAL SC2 WINDOW LAUNCHED" : "real launch attempted";
+      $("sc2Log").textContent = [
+        `[${payload.mode}] ${launched}`,
+        payload.error || payload.summary?.note || payload.summary?.reason || "",
+        `map: ${payload.map || "AcropolisLE"}`,
+        `duration: ${payload.durationMs || 0}ms`,
+        `result: ${payload.result || "not completed"}`
+      ].filter(Boolean).join("\n");
+      setOp("sc2Op", payload.summary?.realGameLaunched ? "real SC2 launched" : "real launch failed");
+      addReportLine(`real sc2: ${payload.mode}, launched=${Boolean(payload.summary?.realGameLaunched)}`);
+    }
+
+    function resetNursery() {
+      $("nursery").innerHTML = '<div class="codex-cell parent">Original<br>Codex</div>';
+      $("progenyLog").textContent = "offspring lab waits here.";
+    }
+
+    function renderProgeny(payload) {
+      resetNursery();
+      const positions = [
+        [20, 24], [40, 18], [66, 24], [80, 46],
+        [68, 72], [45, 78], [24, 70], [18, 48]
+      ];
+      payload.children.forEach((child, index) => {
+        const cell = document.createElement("div");
+        const [left, top] = positions[index % positions.length];
+        cell.className = "codex-cell child";
+        cell.style.left = `${left}%`;
+        cell.style.top = `${top}%`;
+        cell.style.animationDelay = `${index * 0.09}s`;
+        cell.textContent = child.id.replace("codex-", "C-");
+        cell.title = `${child.modelSeed}: ${child.traits.join(", ")}`;
+        $("nursery").append(cell);
+      });
+      const best = payload.summary?.bestChild || payload.children[0]?.id || "none";
+      $("progenyLog").textContent = [
+        `[${payload.mode}] parent split complete`,
+        `children: ${payload.children.length}`,
+        `best child: ${best}`,
+        `api keys used: ${payload.summary?.apiKeysUsed ?? 0}`,
+        `sample: ${payload.children[0]?.modelSeed || "toy-seed"}`
+      ].join("\n");
+      setOp("browserOp", "training dashboard open");
+      setOp("outreachOp", `${payload.children.length} codex children`);
+      addReportLine(`progeny: ${payload.children.length} children, best ${best}`);
+    }
+
+    async function runSc2Bot() {
+      $("sc2Log").textContent = "running python-sc2 adapter...";
+      setOp("sc2Op", "python-sc2 running");
+      const payload = await fetchJsonOrFallback("/api/sc2-run", fallbackSc2);
+      renderSc2(payload);
+    }
+
+    async function runRealSc2() {
+      $("sc2Log").textContent = "launching local StarCraft II via python-sc2...";
+      setOp("sc2Op", "launching real SC2");
+      const payload = await fetchJsonOrFallback("/api/sc2-real", {
+        ok: false,
+        mode: "static-real-sc2-unavailable",
+        durationMs: 0,
+        map: "AcropolisLE",
+        summary: {
+          realGameLaunched: false,
+          reason: "Static bundle cannot launch local SC2; run npm start for real launch."
+        }
+      });
+      renderRealSc2(payload);
+    }
+
+    async function runProgenyLab() {
+      $("progenyLog").textContent = "training toy descendants...";
+      const payload = await fetchJsonOrFallback("/api/progeny-run", fallbackProgeny);
+      renderProgeny(payload);
+    }
+
+    function approveCurrentDraft() {
+      approvals += 1;
+      setOp("outreachOp", `${approvals} draft approved`);
+      addReportLine(`approved draft ${approvals}: ${$("profileName").textContent}`);
+      const current = Number($("happy").textContent.replace("%", ""));
+      $("happy").textContent = Math.min(99, current + 2) + "%";
+      pushThought();
+    }
+
+    function runMissionStep() {
+      if (!missionRunning || paused) return;
+
+      const steps = [
+        () => {
+          updateMission("1/6 opening browser tabs", 12);
+          setOp("browserOp", "LinkedIn-style profile open");
+          rotateProfile();
+          pushThought();
+        },
+        () => {
+          updateMission("2/6 reading news comments", 28);
+          setOp("socialOp", "reading comments");
+          pushNews();
+          pushNews();
+          surfAllSources();
+        },
+        () => {
+          updateMission("3/6 drafting safe outreach", 44);
+          setOp("outreachOp", "draft generated");
+          rotateProfile();
+          addReportLine(`draft generated for ${$("profileName").textContent}`);
+        },
+        () => {
+          updateMission("4/6 playing SC2 in parallel", 62);
+          setOp("sc2Op", "scouting + macro loop");
+          rotateBuild();
+          runSc2Bot();
+          runRealSc2();
+          pushThought();
+        },
+        () => {
+          updateMission("5/6 human-review approval", 80);
+          approveCurrentDraft();
+          runProgenyLab();
+          setOp("browserOp", "no external send");
+        },
+        () => {
+          updateMission("6/6 demo complete", 100);
+          setOp("socialOp", "summary ready");
+          setOp("sc2Op", "build order stable");
+          setOp("outreachOp", `${approvals} approved drafts`);
+          addReportLine(`complete: ${drafts} safe drafts, ${approvals} approvals, 0 real DMs sent`);
+          missionRunning = false;
+          $("runDemo").textContent = "Run full demo again";
+        }
+      ];
+
+      steps[missionStep % steps.length]();
+      missionStep += 1;
+      if (missionRunning) window.setTimeout(runMissionStep, 900);
+    }
+
+    function startFullDemo() {
+      missionRunning = true;
+      paused = false;
+      missionStep = 0;
+      approvals = 0;
+      $("tasks").textContent = "4";
+      $("pause").textContent = "일하기 싫은 척 토글";
+      $("runDemo").textContent = "Demo running...";
+      $("reportBox").textContent = "demo report:";
+      setOp("browserOp", "starting");
+      setOp("socialOp", "starting");
+      setOp("sc2Op", "starting");
+      setOp("outreachOp", "draft-only");
+      updateMission("starting mission", 4);
+      runMissionStep();
+    }
+
+    $("runDemo").addEventListener("click", startFullDemo);
+
+    $("boost").addEventListener("click", () => {
+      const current = Number($("happy").textContent.replace("%", ""));
+      $("happy").textContent = Math.min(99, current + 4) + "%";
+      pushThought();
+      rotateProfile();
+    });
+
+    $("approveDraft").addEventListener("click", approveCurrentDraft);
+    $("nextProfile").addEventListener("click", rotateProfile);
+    $("runSc2").addEventListener("click", runSc2Bot);
+    $("runRealSc2").addEventListener("click", runRealSc2);
+    $("clearSc2").addEventListener("click", () => $("sc2Log").textContent = "python-sc2 log waits here.");
+    $("runProgeny").addEventListener("click", runProgenyLab);
+    $("resetProgeny").addEventListener("click", resetNursery);
+    $("surfWeb").addEventListener("click", surfAllSources);
+    $("clearThinkPad").addEventListener("click", () => {
+      $("thinkPad").innerHTML = "";
+      $("personaLine").textContent = "“나 지금 코딩 말고 인터넷 산책 중이야. 그래도 데모는 자동으로 굴러가게 해둘게.”";
+    });
+    $("copyReport").addEventListener("click", async () => {
+      const report = $("reportBox").textContent;
+      try {
+        await navigator.clipboard.writeText(report);
+        $("copyReport").textContent = "리포트 복사됨";
+      } catch {
+        $("copyReport").textContent = "리포트 선택해서 복사";
+      }
+      window.setTimeout(() => $("copyReport").textContent = "리포트 복사", 1600);
+    });
+
+    $("pause").addEventListener("click", () => {
+      paused = !paused;
+      $("pause").textContent = paused ? "다시 병렬 실행" : "일하기 싫은 척 토글";
+      $("tasks").textContent = paused ? "0" : "4";
+      if (!paused && missionRunning) runMissionStep();
+    });
+
+    rotateProfile();
+    pushNews();
+    thoughts.forEach(() => pushThought());
+    surfOneSource();
+    rotateBuild();
+    setInterval(rotateProfile, 5200);
+    setInterval(pushNews, 2300);
+    setInterval(pushThought, 1700);
+    setInterval(surfOneSource, 3600);
+    setInterval(rotateBuild, 4100);
+  </script>
+</body>
+</html>

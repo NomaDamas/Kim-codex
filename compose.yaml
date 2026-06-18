@@ -1,0 +1,30 @@
+services:
+  sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: openai-builder-sandbox:dev
+    container_name: openai-builder-sandbox
+    hostname: openai-builder-sandbox
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    network_mode: "none"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    mem_limit: 1g
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=128m
+    volumes:
+      - sandbox-workspace:/workspace
+    environment:
+      SHELL: /bin/bash
+      HISTFILE: /workspace/.bash_history
+      NPM_CONFIG_CACHE: /workspace/.npm
+
+volumes:
+  sandbox-workspace:
