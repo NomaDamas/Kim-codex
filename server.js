@@ -6,6 +6,11 @@ const { spawn } = require("child_process");
 const root = __dirname;
 const port = Number(process.env.PORT || 4173);
 const host = process.env.HOST || "127.0.0.1";
+const allowRemoteApi = process.env.ALLOW_REMOTE_API === "1";
+
+if (!allowRemoteApi && !["127.0.0.1", "localhost", "::1"].includes(host)) {
+  throw new Error("Refusing to bind the local API server to a non-localhost host without ALLOW_REMOTE_API=1.");
+}
 
 const mime = {
   ".html": "text/html; charset=utf-8",
@@ -18,7 +23,10 @@ const mime = {
 function sendJson(res, status, payload) {
   res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
-    "cache-control": "no-store"
+    "cache-control": "no-store",
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "no-referrer",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
   });
   res.end(JSON.stringify(payload, null, 2));
 }
@@ -77,9 +85,9 @@ const server = http.createServer((req, res) => {
   }
 
   const safePath = urlPath === "/" ? "/index.html" : urlPath;
-  const filePath = path.join(root, safePath);
+  const filePath = path.resolve(root, "." + safePath);
 
-  if (!filePath.startsWith(root)) {
+  if (filePath !== root && !filePath.startsWith(root + path.sep)) {
     res.writeHead(403);
     res.end("Forbidden");
     return;
@@ -94,7 +102,10 @@ const server = http.createServer((req, res) => {
 
     res.writeHead(200, {
       "content-type": mime[path.extname(filePath)] || "application/octet-stream",
-      "cache-control": "no-store"
+      "cache-control": "no-store",
+      "x-content-type-options": "nosniff",
+      "referrer-policy": "no-referrer",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()"
     });
     res.end(data);
   });

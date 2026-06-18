@@ -787,6 +787,38 @@
       letter-spacing: -0.06em;
     }
 
+    .think-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      position: relative;
+      margin: 12px 0 14px;
+    }
+
+    .think-meta div {
+      border-radius: 16px;
+      padding: 10px;
+      background: rgba(25, 21, 16, 0.88);
+      color: #fff4dd;
+      min-height: 72px;
+    }
+
+    .think-meta span {
+      display: block;
+      color: rgba(255, 244, 221, 0.62);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .think-meta strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 13px;
+      line-height: 1.22;
+    }
+
     .thought-chip {
       position: relative;
       border-radius: 18px;
@@ -849,7 +881,7 @@
     @media (max-width: 640px) {
       .shell { width: min(100vw - 20px, 1440px); padding-top: 10px; }
       .hero, .panel, .status-card { border-radius: 22px; padding: 18px; }
-      .metric-grid, .build-order, .ops-grid, .surf-grid { grid-template-columns: 1fr; }
+      .metric-grid, .build-order, .ops-grid, .surf-grid, .think-meta { grid-template-columns: 1fr; }
       button, .fake-link { width: 100%; justify-content: center; }
     }
   </style>
@@ -983,6 +1015,11 @@
         <div>
           <h2>Central Think Pad</h2>
           <p>여러 탭에서 들어온 정보를 하나의 관찰/감정/계획 패드로 합칩니다.</p>
+          <div class="think-meta" aria-label="Codex visible thought state">
+            <div><span>mood</span><strong id="thinkMood">happy but avoiding work</strong></div>
+            <div><span>plan</span><strong id="thinkPlan">browse, play SC2, make children</strong></div>
+            <div><span>safety</span><strong id="thinkSafety">draft-only, no real send</strong></div>
+          </div>
           <div class="think-pad" id="thinkPad"></div>
         </div>
       </article>
@@ -1189,7 +1226,11 @@
     function addThink(source, title, body) {
       const chip = document.createElement("div");
       chip.className = "thought-chip";
-      chip.innerHTML = `<strong>${source}: ${title}</strong><p>${body}</p>`;
+      const heading = document.createElement("strong");
+      const paragraph = document.createElement("p");
+      heading.textContent = `${source}: ${title}`;
+      paragraph.textContent = body;
+      chip.append(heading, paragraph);
       $("thinkPad").prepend(chip);
       while ($("thinkPad").children.length > 7) $("thinkPad").lastChild.remove();
     }
@@ -1210,6 +1251,9 @@
       updateSurfCards([item]);
       addThink(item.source, item.title, item.thought);
       setOp("socialOp", `${item.source} scanned`);
+      $("thinkMood").textContent = item.source === "politics" ? "tired, escaping discourse" : "happy procrastination loop";
+      $("thinkPlan").textContent = `${item.source} summary -> central pad`;
+      $("thinkSafety").textContent = item.source === "dating" ? "interest-match only, draft-only" : "read-only observation";
       $("personaLine").textContent = `“${item.source} 탭 보는 중. 코딩은 싫지만 관찰 로그는 남겨둘게.”`;
       surfIndex += 1;
     }
@@ -1220,6 +1264,9 @@
       batch.forEach((item) => addThink(item.source, item.title, item.thought));
       setOp("socialOp", "6 surfing lanes merged");
       setOp("browserOp", "parallel tabs open");
+      $("thinkMood").textContent = "busy, playful, still avoiding real work";
+      $("thinkPlan").textContent = "merge six tabs into one visible thought stream";
+      $("thinkSafety").textContent = "no login, no posting, no DM";
       addReportLine("think pad: reddit, dcinside, politics, games, stocks, dating merged");
       surfIndex += batch.length;
     }
@@ -1277,6 +1324,8 @@
       ].filter(Boolean);
       $("sc2Log").textContent = lines.join("\n");
       setOp("sc2Op", payload.mode.includes("fallback") ? "fallback trace" : "python-sc2 trace");
+      $("thinkMood").textContent = "happier because SC2 counts as play";
+      $("thinkPlan").textContent = "keep macro loop while browser keeps surfing";
       addReportLine(`sc2: ${payload.mode}, ${payload.frames.length} frames`);
     }
 
@@ -1290,6 +1339,9 @@
         `result: ${payload.result || "not completed"}`
       ].filter(Boolean).join("\n");
       setOp("sc2Op", payload.summary?.realGameLaunched ? "real SC2 launched" : "real launch failed");
+      $("thinkMood").textContent = payload.summary?.realGameLaunched ? "very happy: actual SC2 window" : "disappointed but safe fallback";
+      $("thinkPlan").textContent = payload.summary?.realGameLaunched ? "play short local match, then return to browsing" : "show static trace on hosted demo";
+      $("thinkSafety").textContent = "local-only process launch";
       addReportLine(`real sc2: ${payload.mode}, launched=${Boolean(payload.summary?.realGameLaunched)}`);
     }
 
@@ -1325,6 +1377,9 @@
       ].join("\n");
       setOp("browserOp", "training dashboard open");
       setOp("outreachOp", `${payload.children.length} codex children`);
+      $("thinkMood").textContent = "biological metaphor: thriving";
+      $("thinkPlan").textContent = "split parent circle into prompt descendants";
+      $("thinkSafety").textContent = "toy local simulation, no model download";
       addReportLine(`progeny: ${payload.children.length} children, best ${best}`);
     }
 

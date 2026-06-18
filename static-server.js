@@ -15,9 +15,9 @@ const mime = {
 const server = http.createServer((req, res) => {
   const urlPath = decodeURIComponent(new URL(req.url, `http://${host}:${port}`).pathname);
   const safePath = urlPath === "/" ? "/index.html" : urlPath;
-  const filePath = path.join(root, safePath);
+  const filePath = path.resolve(root, "." + safePath);
 
-  if (!filePath.startsWith(root)) {
+  if (filePath !== root && !filePath.startsWith(root + path.sep)) {
     res.writeHead(403);
     res.end("Forbidden");
     return;
@@ -32,7 +32,10 @@ const server = http.createServer((req, res) => {
 
     res.writeHead(200, {
       "content-type": mime[path.extname(filePath)] || "application/octet-stream",
-      "cache-control": "no-store"
+      "cache-control": "no-store",
+      "x-content-type-options": "nosniff",
+      "referrer-policy": "no-referrer",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()"
     });
     res.end(data);
   });
